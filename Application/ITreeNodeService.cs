@@ -7,5 +7,6 @@ namespace Application
         public Task<TreeNode> GetTree(string name);
         public Task AddTreeNode( string treeName, int parentId, string nodeName);
         public Task DeleteTreeNode(string treeName, int nodeId);
+        public Task RenameTreeNode(string treeName, string newName, int nodeId);
     }
 }

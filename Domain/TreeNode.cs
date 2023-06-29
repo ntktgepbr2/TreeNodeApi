@@ -1,10 +1,17 @@
-﻿namespace Domain;
+﻿using System.Text.Json.Serialization;
 
-public class TreeNode : BaseDomainModel
+namespace Domain;
+
+public class TreeNode
 {
-    public List<TreeNode> Children { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public TreeNode? Parent { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int? ParentId { get; set; }
+
+    public List<TreeNode> Children { get; set; }
 
     public TreeNode(string name)
     {
@@ -27,16 +34,16 @@ public class TreeNode : BaseDomainModel
         }
     }
 
-    public TreeNode FindNode(TreeNode currentNode, int parentId)
+    public TreeNode FindNode(TreeNode currentNode, int nodeId)
     {
-        if (currentNode.Id == parentId)
+        if (currentNode.Id == nodeId)
         {
             return currentNode;
         }
 
         foreach (var child in currentNode.Children)
         {
-            var foundNode = FindNode(child, parentId);
+            var foundNode = FindNode(child, nodeId);
 
             if (foundNode != null)
             {
@@ -46,4 +53,5 @@ public class TreeNode : BaseDomainModel
 
         return null;
     }
+
 }
