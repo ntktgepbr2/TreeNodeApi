@@ -11,6 +11,7 @@ namespace Persistence
         }
 
         public DbSet<TreeNode> TreeNodes { get; set; }
+        public DbSet<Journal> Journals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
