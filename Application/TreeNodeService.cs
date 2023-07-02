@@ -27,38 +27,49 @@ namespace Application
             return treeHierarchy;
         }
 
-        public async Task AddTreeNode( string treeName, int parentId, string nodeName)
+        public async Task AddTreeNode(int parentId, string nodeName)
         {
-            var tree = await FindTree(treeName) ??
-                       throw new SecureException($"Tree with the name {treeName} was not found");
-            var treeHierarchy = GetTreeHierarchy(tree);
+            var parentNode = await _context.TreeNodes
+                .Include(n => n.Children)
+                .FirstOrDefaultAsync(x => x.Id == parentId) ??
+                             throw new SecureException($"Parent node with an Id {parentId} was not found");
 
-            treeHierarchy.AddNode(parentId, nodeName);
+            if (parentNode.Children.Any(x => x.Name == nodeName)) throw new SecureException("Duplicate name");
+
+            var newChildNode = new TreeNode(nodeName);
+            parentNode.Children.Add(newChildNode);
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteTreeNode(string treeName, int nodeId)
+        public async Task DeleteTreeNode(int nodeId)
         {
-            var tree = await FindTree(treeName) ??
-                       throw new SecureException($"Tree with the name {treeName} was not found");
-            var treeHierarchy = GetTreeHierarchy(tree);
+            var nodeToDelete = await _context.TreeNodes
+                .Include(n => n.Children)
+                .FirstOrDefaultAsync(x => x.Id == nodeId) ??
+                               throw new SecureException($"Node with an Id {nodeId} was not found");
 
-            RemoveNode(treeHierarchy, nodeId);
-             
+            if (nodeToDelete.Children.Any()) throw new SecureException("You have to delete all children nodes first");
+
+            _context.TreeNodes.Remove(nodeToDelete);
+
             await _context.SaveChangesAsync();
         }
 
-        public async Task RenameTreeNode(string treeName, string newName, int nodeId)
+        public async Task RenameTreeNode(string newName, int nodeId)
         {
-            var tree = await FindTree(treeName) ??
-                       throw new SecureException($"Tree with the name {treeName} was not found");
 
-            if(tree.Id == nodeId) throw new SecureException("Couldn't rename root node");
+            var nodeToRename = await _context.TreeNodes
+                .Include(p => p.Parent)
+                .ThenInclude(p => p.Children)
+                .FirstOrDefaultAsync(x => x.Id == nodeId) ?? 
+                               throw new SecureException($"Node with an Id {nodeId} was not found");
 
-            var treeHierarchy = GetTreeHierarchy(tree);
-            var node = treeHierarchy.FindNode(treeHierarchy,nodeId);
-            node.Name = newName;
+            if (nodeToRename.Parent == null) throw new SecureException("Couldn't rename root node");
+
+            if (nodeToRename.Parent.Children.Any(x => x.Name == newName)) throw new SecureException("Duplicate name");
+
+            nodeToRename.Name = newName;
 
             await _context.SaveChangesAsync();
         }
@@ -76,21 +87,6 @@ namespace Application
             await _context.SaveChangesAsync();
         }
 
-        private void RemoveNode(TreeNode currentNode, int nodeId)
-        {
-            if (currentNode.Id == nodeId)
-            {
-                if (currentNode.Children.Any()) throw new SecureException("You have to delete all children nodes first");
-
-                _context.TreeNodes.Remove(currentNode);
-
-                return;
-            }
-
-            currentNode.Children.ForEach(x => RemoveNode(x, nodeId));
-
-            throw new SecureException($"Node with id {nodeId} was not found in this tree.");
-        }
 
         private TreeNode GetTreeHierarchy(TreeNode tree)
         {

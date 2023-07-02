@@ -5,8 +5,8 @@ namespace Application
     public interface ITreeNodeService
     {
         public Task<TreeNode> GetTree(string name);
-        public Task AddTreeNode( string treeName, int parentId, string nodeName);
-        public Task DeleteTreeNode(string treeName, int nodeId);
-        public Task RenameTreeNode(string treeName, string newName, int nodeId);
+        public Task AddTreeNode(int parentId, string nodeName);
+        public Task DeleteTreeNode(int nodeId);
+        public Task RenameTreeNode( string newName, int nodeId);
     }
 }

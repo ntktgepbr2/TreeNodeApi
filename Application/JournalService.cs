@@ -18,7 +18,7 @@ public class JournalService : IJournalService
     public async Task<Journal> Get(int id)
     {
       return await _context.Journals.FindAsync(id) ??
-             throw new SecureException($"There is no journal with id{id}");
+             throw new SecureException($"There is no journal with id {id}");
     }
 
     public async Task<PaginatedJournals> GetRange(int skip, int take, DateTime filterFrom, DateTime filterTo)

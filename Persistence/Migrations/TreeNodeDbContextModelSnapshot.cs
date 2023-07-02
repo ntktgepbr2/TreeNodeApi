@@ -50,7 +50,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Journals");
+                    b.ToTable("Journals", (string)null);
                 });
 
             modelBuilder.Entity("Domain.TreeNode", b =>
@@ -72,7 +72,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("TreeNodes");
+                    b.ToTable("TreeNodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.TreeNode", b =>

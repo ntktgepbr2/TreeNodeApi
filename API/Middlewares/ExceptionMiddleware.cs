@@ -6,17 +6,29 @@ using Persistence;
 
 namespace TreeNodeApi.Middlewares;
 
+/// <summary>
+/// Exception middleware.
+/// </summary>
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Exception middleware constructor.
+    /// </summary>
+    /// <param name="next">The next delegate.</param>
+    /// <param name="serviceProvider">The service provider.</param>
     public ExceptionMiddleware(RequestDelegate next, IServiceProvider serviceProvider)
     {
         _next = next;
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>
+    /// Invoke middleware.
+    /// </summary>
+    /// <param name="context"></param>
     public async Task Invoke(HttpContext context)
     {
         try

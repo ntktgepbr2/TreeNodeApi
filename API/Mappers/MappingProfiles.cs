@@ -1,18 +1,19 @@
 ﻿using Application;
-using Application.Commands;
 using AutoMapper;
 using Domain;
 
 namespace TreeNodeApi.Mappers;
 
+/// <summary>
+/// Mapping profiles.
+/// </summary>
 public class MappingProfiles : Profile
 {
+    /// <summary>
+    /// Mapping profiles constructor.
+    /// </summary>
     public MappingProfiles()
     {
-        CreateMap<GetJournalRangeRequest, GetJournalRangeCommand>()
-            .ForMember(d => d.FilterFrom, o => o.MapFrom(s => s.Filter.From))
-            .ForMember(d => d.FilterTo, o => o.MapFrom(s => s.Filter.To));
-
         CreateMap<Journal, JournalDto>();
     }
 }
